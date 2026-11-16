@@ -182,6 +182,24 @@
 #    define RGB_MATRIX_DEFAULT_VAL RGB_MATRIX_MAXIMUM_BRIGHTNESS
 #endif // RGB_MATRIX_ENABLE
 
+// --- Required by the Bastard Keyboards Argos and pointing modules (from the vendor keymap) ---
+// Layer the trackball can auto-activate (off by default; switch on in Argos).
+// Layer 3 is NAV, the layer that holds the mouse buttons.
+#ifdef AUTO_MOUSE_DEFAULT_LAYER
+#    undef AUTO_MOUSE_DEFAULT_LAYER
+#endif
+#define AUTO_MOUSE_DEFAULT_LAYER 3
+
+#ifdef LED_DPI_INDICATOR_INDEX
+#    undef LED_DPI_INDICATOR_INDEX
+#endif
+#define LED_DPI_INDICATOR_INDEX 0
+
+#ifdef RGBLIGHT_LED_COUNT
+#    undef RGBLIGHT_LED_COUNT
+#endif
+#define RGBLIGHT_LED_COUNT 36
+
 // USB cable is in the LEFT half (the half without the trackball).
 // The keyboard default is MASTER_RIGHT; without it QMK treats the USB half as left.
 // Delete these two lines to go back to USB in the right half.
