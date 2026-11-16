@@ -72,25 +72,17 @@ combo_t key_combos[] = {
 };
 */
 
-enum combos {
-  WF_COPY,
-  RS_PASTE,
-  YSCLN_MMOLAYER,
-  UC_GAMINGLAYER,
-  COMBO_LENGTH
-};
-
-const uint16_t PROGMEM wf_combo[] = {KC_W, KC_F, COMBO_END}; //COPY
-const uint16_t PROGMEM rs_combo[] = {KC_R, KC_S, COMBO_END}; //PASTE
-const uint16_t PROGMEM yscln_combo[] = {KC_Y, KC_SCLN, COMBO_END}; //TO MMO LAYER
-const uint16_t PROGMEM sd_combo[] = {KC_U, KC_Y, COMBO_END}; //TO GAMING LAYER
-
-combo_t key_combos[] = {
-     [WF_COPY] = COMBO(wf_combo, KC_COPY),
-     [RS_PASTE] = COMBO(rs_combo, KC_PASTE),
-     [YSCLN_MMOLAYER] = COMBO(yscln_combo, TO(7)),
-     [UC_GAMINGLAYER] = COMBO(sd_combo, TO(6)),
-};
+/*
+ * Combos are owned by the Argos module (it defines key_combos[] itself), so the
+ * four combos from the 2023 keymap are set in Argos (argos.bastardkb.com), not here:
+ *
+ *   W + F        -> Ctrl+C (copy)
+ *   R + S        -> Ctrl+V (paste)
+ *   Y + ;        -> TO(7)  (MMO layer)
+ *   U + Y        -> TO(6)  (gaming layer)
+ *
+ * Combo term was 40 ms, combos active from layer 0 only.
+ */
 
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
