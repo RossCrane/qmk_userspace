@@ -1,0 +1,74 @@
+name: Build with public log
+
+# Builds the same targets as build_binaries.yaml, then pushes the full compiler
+# output and any firmware files to the `ci-logs` branch so a failed build can be
+# read without a GitHub login.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: ghcr.io/qmk/qmk_cli
+    steps:
+      - name: Disable git safe directory checks
+        run: git config --global --add safe.directory '*'
+
+      - name: Checkout userspace
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Checkout QMK firmware
+        uses: actions/checkout@v4
+        with:
+          repository: bastardkb/bastardkb-qmk
+          ref: main
+          path: qmk_firmware
+          submodules: recursive
+
+      - name: Install QMK dependencies
+        run: python3 -m pip install -r qmk_firmware/requirements.txt
+
+      - name: Configure QMK
+        run: |
+          qmk config user.qmk_home=$GITHUB_WORKSPACE/qmk_firmware
+          qmk config user.overlay_dir=$GITHUB_WORKSPACE
+
+      - name: Build
+        shell: bash
+        run: |
+          set +e
+          qmk userspace-compile -e DUMP_CI_METADATA=yes > build-output.raw 2>&1
+          echo "exit=$?" >> build-output.raw
+          for f in qmk_firmware/.build/failed.log.* qmk_firmware/.build/build.log.*; do
+            [ -f "$f" ] && { echo "=================== $f"; cat "$f"; } >> build-output.raw
+          done
+          sed 's/\x1b\[[0-9;]*[A-Za-z]//g' build-output.raw > build-output.log
+          tail -n 80 build-output.log
+
+      - name: Publish log and firmware to ci-logs branch
+        shell: bash
+        run: |
+          mkdir out
+          cp build-output.log out/
+          find . -maxdepth 3 \( -name '*.uf2' -o -name '*.hex' -o -name '*.bin' \) -not -path './out/*' -not -path './qmk_firmware/lib/*' -exec cp {} out/ \;
+          echo "$GITHUB_SHA" > out/commit.txt
+          cd out
+          git init -q -b ci-logs
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Build output for $GITHUB_SHA"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" ci-logs
+          ls -la
+
+      - name: Fail if no firmware was produced
+        shell: bash
+        run: ls out/*.uf2
