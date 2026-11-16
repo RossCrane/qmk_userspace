@@ -16,170 +16,164 @@
  */
 
 /*
-LAYOUT_charybdis_3x5( \
-K00,   K01,   K02,   K03,   K04,          K05,   K06,   K07,   K08,   K09, \
-K10,   K11,   K12,   K13,   K14,          K15,   K16,   K17,   K18,   K19, \
-K20,   K21,   K22,   K23,   K24,          K25,   K26,   K27,   K28,   K29, \
-              K32,   K33,   K34,          K35,   K36 \
-*/
+ * Dylan's Charybdis Nano keymap, version 2 (2026-11-15).
+ *
+ * Physical layout (LAYOUT):
+ *   K00 K01 K02 K03 K04        K05 K06 K07 K08 K09
+ *   K10 K11 K12 K13 K14        K15 K16 K17 K18 K19
+ *   K20 K21 K22 K23 K24        K25 K26 K27 K28 K29
+ *           K32 K33 K34        K35 K36
+ *
+ * USB is in the LEFT half. The trackball is on the RIGHT half.
+ *
+ * Combos and tap dances are owned by the Argos module and are set at
+ * argos.bastardkb.com, not in this file. The four combos from the 2023 keymap:
+ *   W + F -> Ctrl+C     R + S -> Ctrl+V
+ * (the two layer combos are gone: MMO was dropped, gaming is now a double tap).
+ */
 
 #include QMK_KEYBOARD_H
-
-#define _LAYER0 0 //BASE
-#define _LAYER1 1 //SYMBOL
-#define _LAYER2 2 //NUM
-#define _LAYER3 3 //NAV
-#define _LAYER4 4 //MEDIA
-#define _LAYER5 5 //FUNCTION
-#define _LAYER6 6 //GAMING
-#define _LAYER7 7 //MMO
-
-enum charybdis_keymap_layers {
-    LAYER0 = SAFE_RANGE,
-    LAYER1,
-    LAYER2,
-    LAYER3,
-    LAYER4,
-    LAYER5,
-    LAYER6,
-    LAYER7,
-};
-
-#define CTL_BSP CTL_T(KC_BSPC)
-#define SFT_SPC SFT_T(KC_SPC)
-#define GUI_ENT GUI_T(KC_ENT)
-#define KC_COPY LCTL(KC_C)
-#define KC_PASTE LCTL(KC_V)
+#include "bk_pointing_device.h"
 
 /*
-enum combos {
-    COMBO_ESC,
-    COMBO_TAB,
-    COMBO_ENTER,
-    COMBO_DEL,
-    COMBO_LENGTH
-};
-uint16_t COMBO_LEN = COMBO_LENGTH;
-const uint16_t PROGMEM combo_keys_esc[] = {KC_F, KC_W, COMBO_END};
-const uint16_t PROGMEM combo_keys_tab[] = {KC_S, KC_R, COMBO_END};
-const uint16_t PROGMEM combo_keys_enter[] = {KC_I, KC_E, COMBO_END};
-const uint16_t PROGMEM combo_keys_del[] = {KC_Y, KC_U, COMBO_END};
-combo_t key_combos[] = {
-    [COMBO_ESC] = COMBO(combo_keys_esc, KC_ESC),
-    [COMBO_TAB] = COMBO(combo_keys_tab, KC_TAB),
-    [COMBO_ENTER] = COMBO(combo_keys_enter, KC_ENTER),
-    [COMBO_DEL] = COMBO(combo_keys_del, KC_DELETE),
-};
-*/
-
-/*
- * Combos are owned by the Argos module (it defines key_combos[] itself), so the
- * four combos from the 2023 keymap are set in Argos (argos.bastardkb.com), not here:
- *
- *   W + F        -> Ctrl+C (copy)
- *   R + S        -> Ctrl+V (paste)
- *   Y + ;        -> TO(7)  (MMO layer)
- *   U + Y        -> TO(6)  (gaming layer)
- *
- * Combo term was 40 ms, combos active from layer 0 only.
+ * Layer order matters: a higher layer hides a lower one. The three "typing"
+ * layers (Colemak, QWERTY, gaming) must sit below the held layers so that
+ * symbols, numbers and navigation work on top of any of them.
  */
+enum layers {
+    L_BASE = 0, // Colemak-DH
+    L_QWERTY,   // QWERTY fallback, toggled from the function layer
+    L_GAME,     // left-hand gaming, toggled by double-tapping the "/" key
+    L_SYM,      // symbols        (hold Tab)
+    L_NUM,      // numbers        (hold Enter)
+    L_NAV,      // arrows, mouse buttons on thumbs (hold Q or ;)
+    L_MOUSE,    // one-hand mouse (turns on when the ball moves, or hold B)
+    L_FUNC,     // F-keys, media, RGB, system (hold Esc or J)
+};
+
+enum custom_keycodes {
+    SL_GAME = SAFE_RANGE, // tap: "/"   double tap: toggle the gaming layer
+};
+
+#define AI_TALK KC_F13 // the "talk to AI" key; the PC binds F13 to the app
 
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-  [_LAYER0] = LAYOUT( //BASE
-  // ╭─────────────────────────────────────────────╮                ╭─────────────────────────────────────────────╮
-      LT(3,KC_Q),  KC_W,    KC_F,    KC_P, LT(4,KC_B),              LT(4,KC_J), KC_L, KC_U,   KC_Y, LT(3,KC_SCLN),
-  // ├─────────────────────────────────────────────┤                ├─────────────────────────────────────────────┤
-      KC_A,  KC_R,    KC_S,    KC_T,    KC_G,                         KC_M,    KC_N, KC_E,     KC_I,       KC_O,
-  // ├─────────────────────────────────────────────┤                ├─────────────────────────────────────────────┤
-      LGUI_T(KC_Z), LALT_T(KC_X), LCTL_T(KC_C), LSFT_T(KC_D), KC_V,  KC_K, RSFT_T(KC_H), RCTL_T(KC_COMM), RALT_T(KC_DOT), RGUI_T(KC_SLSH),
-  // ╰─────────────────────────────────────────────┤                ├─────────────────────────────────────────────╯
-                         LT(5,KC_ESC), KC_SPC, LT(1,KC_TAB),         LT(2,KC_ENT), KC_BSPC
-  //                   ╰───────────────────────────╯                ╰──────────────────╯
+  [L_BASE] = LAYOUT(
+      LT(L_NAV,KC_Q), KC_W,         KC_F,         KC_P,         LT(L_MOUSE,KC_B),      LT(L_FUNC,KC_J), KC_L,         KC_U,            KC_Y,           LT(L_NAV,KC_SCLN),
+      KC_A,           KC_R,         KC_S,         KC_T,         KC_G,                  KC_M,            KC_N,         KC_E,            KC_I,           KC_O,
+      LGUI_T(KC_Z),   LALT_T(KC_X), LCTL_T(KC_C), LSFT_T(KC_D), KC_V,                  KC_K,            RSFT_T(KC_H), RCTL_T(KC_COMM), RALT_T(KC_DOT), SL_GAME,
+                              LT(L_FUNC,KC_ESC), KC_SPC, LT(L_SYM,KC_TAB),             LT(L_NUM,KC_ENT), KC_BSPC
   ),
 
-  [_LAYER1] = LAYOUT( //SYMBOL
-  // ╭─────────────────────────────────────────────╮                ╭─────────────────────────────────────────────╮
-      LSFT(KC_1), LSFT(KC_2), LSFT(KC_3), LSFT(KC_4), LSFT(KC_5),    KC_GRV, LSFT(KC_LBRC), LSFT(KC_RBRC), KC_BSLS, KC_SCLN,
-  // ├─────────────────────────────────────────────┤                ├─────────────────────────────────────────────┤
-      LSFT(KC_6), LSFT(KC_7), LSFT(KC_8), KC_COMM, KC_DOT,           KC_QUOT, LSFT(KC_9), LSFT(KC_0), LSFT(KC_MINS), KC_EQL,
-  // ├─────────────────────────────────────────────┤                ├─────────────────────────────────────────────┤
-      KC_LGUI, KC_LALT, KC_LCTL, KC_LSFT, KC_NO,                     LSFT(KC_QUOT), KC_LBRC, KC_RBRC, KC_MINS, KC_SLSH,
-  // ╰─────────────────────────────────────────────┤                ├─────────────────────────────────────────────╯
-                         KC_ESC, KC_SPC, KC_TRNS,                    KC_ENT, KC_BSPC
-  //                   ╰───────────────────────────╯                ╰──────────────────╯
+  // Same mods, thumbs and layer keys as the base layer; only the letters change.
+  [L_QWERTY] = LAYOUT(
+      LT(L_NAV,KC_Q), KC_W,         KC_E,         KC_R,         LT(L_MOUSE,KC_T),      LT(L_FUNC,KC_Y), KC_U,         KC_I,            KC_O,           LT(L_NAV,KC_P),
+      KC_A,           KC_S,         KC_D,         KC_F,         KC_G,                  KC_H,            KC_J,         KC_K,            KC_L,           KC_SCLN,
+      LGUI_T(KC_Z),   LALT_T(KC_X), LCTL_T(KC_C), LSFT_T(KC_V), KC_B,                  KC_N,            RSFT_T(KC_M), RCTL_T(KC_COMM), RALT_T(KC_DOT), _______,
+                                       _______, _______, _______,                      _______, _______
   ),
 
-  [_LAYER2] = LAYOUT( //NUM
-  // ╭─────────────────────────────────────────────╮                ╭─────────────────────────────────────────────╮
-      KC_PSLS, KC_7, KC_8, KC_9, KC_PAST,                            KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
-  // ├─────────────────────────────────────────────┤                ├─────────────────────────────────────────────┤
-      KC_PMNS, KC_4, KC_5, KC_6, KC_PPLS,                            KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
-  // ├─────────────────────────────────────────────┤                ├─────────────────────────────────────────────┤
-      KC_EQL, KC_1, KC_2, KC_3, KC_DOT,                              KC_NO, KC_LSFT, KC_LCTL, KC_LALT, KC_LGUI,
-  // ╰─────────────────────────────────────────────┤                ├─────────────────────────────────────────────╯
-                        LSFT(KC_MINS), KC_0, KC_ENT,                 KC_TRNS, KC_BSPC
-  //                   ╰───────────────────────────╯                ╰──────────────────╯
+  // Left hand only. A W D on the home row, S below W. Q E R F keep their
+  // QWERTY positions relative to A W D. Mods on the pinky.
+  // The right half falls through to the typing layer below.
+  [L_GAME] = LAYOUT(
+      KC_ESC,  KC_Q,    KC_X,    KC_E,    KC_R,                          _______, _______, _______, _______, _______,
+      KC_LSFT, KC_A,    KC_W,    KC_D,    KC_F,                          _______, _______, _______, _______, _______,
+      KC_LCTL, KC_Z,    KC_S,    KC_C,    KC_V,                          _______, _______, _______, _______, _______,
+                                 KC_1,    KC_SPC,  KC_TAB,               _______, _______
   ),
 
-    [_LAYER3] = LAYOUT( //NAV
-  // ╭─────────────────────────────────────────────╮                ╭─────────────────────────────────────────────╮
-      KC_NO, KC_PGDN, KC_UP, KC_PGUP, MS_ACL2,                       MS_ACL2, KC_PGUP, KC_UP, KC_PGDN, KC_NO,
-  // ├─────────────────────────────────────────────┤                ├─────────────────────────────────────────────┤
-      KC_TRNS, KC_LEFT, KC_DOWN, KC_RGHT, MS_ACL0,                   MS_ACL0, KC_LEFT, KC_DOWN, KC_RGHT, KC_TRNS,
-  // ├─────────────────────────────────────────────┤                ├─────────────────────────────────────────────┤
-      KC_LGUI, KC_LALT, KC_LCTL, KC_LSFT, KC_NO,                     MS_BTN3,    KC_LSFT, KC_LCTL, KC_LALT, KC_LGUI,
-  // ╰─────────────────────────────────────────────┤                ├─────────────────────────────────────────────╯
-                         MS_BTN2, MS_BTN1, MS_BTN3,                  MS_BTN2, MS_BTN1
-  //                   ╰───────────────────────────╯                ╰──────────────────╯
+  [L_SYM] = LAYOUT(
+      LSFT(KC_1), LSFT(KC_2), LSFT(KC_3), LSFT(KC_4), LSFT(KC_5),        KC_GRV,        LSFT(KC_LBRC), LSFT(KC_RBRC), KC_BSLS,       KC_SCLN,
+      LSFT(KC_6), LSFT(KC_7), LSFT(KC_8), KC_COMM,    KC_DOT,            KC_QUOT,       LSFT(KC_9),    LSFT(KC_0),    LSFT(KC_MINS), KC_EQL,
+      KC_LGUI,    KC_LALT,    KC_LCTL,    KC_LSFT,    KC_NO,             LSFT(KC_QUOT), KC_LBRC,       KC_RBRC,       KC_MINS,       KC_SLSH,
+                                    KC_ESC, KC_SPC, _______,             KC_ENT, KC_BSPC
   ),
 
-    [_LAYER4] = LAYOUT( //MEDIA
-  // ╭─────────────────────────────────────────────╮                ╭─────────────────────────────────────────────╮
-      KC_NO, RM_PREV, RM_TOGG, RM_NEXT, KC_NO,                      KC_NO, RM_NEXT, RM_TOGG, RM_PREV, KC_NO,
-  // ├─────────────────────────────────────────────┤                ├─────────────────────────────────────────────┤
-      KC_MPRV, KC_VOLD, KC_MUTE, KC_VOLU, KC_MNXT,                   KC_MNXT, KC_VOLU, KC_MUTE, KC_VOLD, KC_MPRV,
-  // ├─────────────────────────────────────────────┤                ├─────────────────────────────────────────────┤
-      KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,                             KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
-  // ╰─────────────────────────────────────────────┤                ├─────────────────────────────────────────────╯
-                         KC_TRNS, KC_MPLY, KC_MSTP,                  KC_MSTP, KC_MPLY
-  //                   ╰───────────────────────────╯                ╰──────────────────╯
+  [L_NUM] = LAYOUT(
+      KC_PSLS, KC_7, KC_8, KC_9, KC_PAST,                                KC_NO, KC_NO,   KC_NO,   KC_NO,   KC_NO,
+      KC_PMNS, KC_4, KC_5, KC_6, KC_PPLS,                                KC_NO, KC_NO,   KC_NO,   KC_NO,   KC_NO,
+      KC_EQL,  KC_1, KC_2, KC_3, KC_DOT,                                 KC_NO, KC_LSFT, KC_LCTL, KC_LALT, KC_LGUI,
+                           LSFT(KC_MINS), KC_0, KC_ENT,                  _______, KC_BSPC
   ),
 
-    [_LAYER5] = LAYOUT( //FUNCTION
-  // ╭─────────────────────────────────────────────╮                ╭─────────────────────────────────────────────╮
-      KC_TRNS, QK_BOOT, DB_TOGG, EE_CLR, KC_TRNS,                    KC_PSCR, KC_F7, KC_F8, KC_F9, KC_F12,
-  // ├─────────────────────────────────────────────┤                ├─────────────────────────────────────────────┤
-      KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,                             KC_SCRL, KC_F4, KC_F5, KC_F6, KC_F11,
-  // ├─────────────────────────────────────────────┤                ├─────────────────────────────────────────────┤
-      KC_LGUI, KC_LALT, KC_LCTL, KC_LSFT, KC_NO,                     KC_PAUS, KC_F1, KC_F2, KC_F3, KC_F10,
-  // ╰─────────────────────────────────────────────┤                ├─────────────────────────────────────────────╯
-                         KC_TRNS, KC_MPLY, KC_MSTP,                  KC_MSTP, KC_MPLY
-  //                   ╰───────────────────────────╯                ╰──────────────────╯
+  [L_NAV] = LAYOUT(
+      KC_NO,   KC_PGDN, KC_UP,   KC_PGUP, MS_ACL2,                       MS_ACL2, KC_PGUP, KC_UP,   KC_PGDN, KC_NO,
+      _______, KC_LEFT, KC_DOWN, KC_RGHT, MS_ACL0,                       MS_ACL0, KC_LEFT, KC_DOWN, KC_RGHT, _______,
+      KC_LGUI, KC_LALT, KC_LCTL, KC_LSFT, KC_NO,                         MS_BTN3, KC_LSFT, KC_LCTL, KC_LALT, KC_LGUI,
+                              MS_BTN2, MS_BTN1, MS_BTN3,                 MS_BTN2, MS_BTN1
   ),
 
-    [_LAYER6] = LAYOUT( //GAMING
-  // ╭─────────────────────────────────────────────╮                ╭─────────────────────────────────────────────╮
-      KC_ESC, KC_Q, KC_W, KC_E, KC_R,                                KC_T, KC_Y, KC_U, KC_I, KC_O,
-  // ├─────────────────────────────────────────────┤                ├─────────────────────────────────────────────┤
-      KC_LSFT, KC_A, KC_S, KC_D, KC_F,                               KC_G, KC_H, KC_J, KC_K, KC_L,
-  // ├─────────────────────────────────────────────┤                ├─────────────────────────────────────────────┤
-      KC_LCTL, KC_Z, KC_X, KC_C, KC_V,                               KC_B, KC_N, KC_M, KC_P, TO(0),
-  // ╰─────────────────────────────────────────────┤                ├─────────────────────────────────────────────╯
-                         KC_1, KC_SPC, KC_TAB,                       KC_2, KC_MUTE
-  //                   ╰───────────────────────────╯                ╰──────────────────╯
+  // One-hand mouse, all on the right hand. Thumb rolls the ball.
+  //   M (index, inner) hold = scroll by rolling
+  //   N = left click, E = right click, I = middle click
+  //   O (pinky) hold = precision (slow pointer)
+  // Every other key is transparent, so typing any other key leaves the layer.
+  [L_MOUSE] = LAYOUT(
+      _______, _______, _______, _______, _______,                       _______, _______, _______, _______, _______,
+      _______, _______, _______, _______, _______,                       DRGSCRL, MS_BTN1, MS_BTN2, MS_BTN3, SNIPING,
+      _______, _______, _______, _______, _______,                       _______, _______, _______, _______, _______,
+                                 _______, _______, _______,              _______, _______
   ),
 
-    [_LAYER7] = LAYOUT( //MMO
-  // ╭─────────────────────────────────────────────╮                ╭─────────────────────────────────────────────╮
-      KC_ESC, KC_1, KC_2, KC_3, KC_4,                                KC_T, KC_Y, KC_U, KC_I, KC_O,
-  // ├─────────────────────────────────────────────┤                ├─────────────────────────────────────────────┤
-      KC_LSFT, KC_Q, KC_W, KC_E, KC_F,                               KC_G, KC_H, KC_J, KC_K, KC_L,
-  // ├─────────────────────────────────────────────┤                ├─────────────────────────────────────────────┤
-      KC_LCTL, KC_5, KC_6, KC_7, KC_8,                               KC_B, KC_N, KC_M, KC_X, TO(0),
-  // ╰─────────────────────────────────────────────┤                ├─────────────────────────────────────────────╯
-                         KC_9, KC_SPC, KC_TAB,                       KC_MUTE, KC_0
-  //                   ╰───────────────────────────╯                ╰──────────────────╯
+  // Function keys on the right. Media, RGB and system keys on the left.
+  [L_FUNC] = LAYOUT(
+      QK_BOOT, EE_CLR,  RM_PREV, RM_TOGG, RM_NEXT,                       KC_PSCR, KC_F7, KC_F8, KC_F9, KC_F12,
+      KC_MPRV, KC_VOLD, KC_MUTE, KC_VOLU, KC_MNXT,                       KC_SCRL, KC_F4, KC_F5, KC_F6, KC_F11,
+      KC_LGUI, KC_LALT, KC_LCTL, KC_LSFT, TG(L_QWERTY),                  KC_PAUS, KC_F1, KC_F2, KC_F3, KC_F10,
+                                 _______, KC_MPLY, KC_MSTP,              AI_TALK, KC_MPLY
   ),
 };
 // clang-format on
+
+/*
+ * SL_GAME: a small double-tap key written here because tap dances belong to
+ * Argos. One tap types "/" (sent when the tapping term runs out or when the
+ * next key is pressed). Two taps inside the tapping term toggle the gaming layer.
+ */
+static bool     sl_pending = false;
+static uint16_t sl_timer   = 0;
+
+static void sl_flush(void) {
+    if (sl_pending) {
+        sl_pending = false;
+        tap_code(KC_SLSH);
+    }
+}
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    if (keycode == SL_GAME) {
+        if (record->event.pressed) {
+            if (sl_pending && timer_elapsed(sl_timer) < TAPPING_TERM) {
+                sl_pending = false;
+                layer_invert(L_GAME);
+            } else {
+                sl_flush();
+                sl_pending = true;
+                sl_timer   = timer_read();
+            }
+        }
+        return false;
+    }
+    if (record->event.pressed) {
+        sl_flush(); // keep "/" in order when another key follows it quickly
+    }
+    return true;
+}
+
+void housekeeping_task_user(void) {
+    if (sl_pending && timer_elapsed(sl_timer) >= TAPPING_TERM) {
+        sl_flush();
+    }
+
+    // Turn the automatic mouse layer on once after boot. Argos can switch it
+    // off for the current session; it comes back on at the next power-up.
+    static bool auto_mouse_done = false;
+    if (!auto_mouse_done && timer_read32() > 1500) {
+        auto_mouse_done = true;
+        if (!bkpd_get_auto_mouse_layer_enabled()) {
+            bkpd_set_auto_mouse_layer_enabled(true);
+        }
+    }
+}

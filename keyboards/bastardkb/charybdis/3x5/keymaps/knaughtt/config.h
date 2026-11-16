@@ -184,11 +184,11 @@
 
 // --- Required by the Bastard Keyboards Argos and pointing modules (from the vendor keymap) ---
 // Layer the trackball can auto-activate (off by default; switch on in Argos).
-// Layer 3 is NAV, the layer that holds the mouse buttons.
+// Layer 6 is L_MOUSE in keymap.c.
 #ifdef AUTO_MOUSE_DEFAULT_LAYER
 #    undef AUTO_MOUSE_DEFAULT_LAYER
 #endif
-#define AUTO_MOUSE_DEFAULT_LAYER 3
+#define AUTO_MOUSE_DEFAULT_LAYER 6
 
 #ifdef LED_DPI_INDICATOR_INDEX
 #    undef LED_DPI_INDICATOR_INDEX
