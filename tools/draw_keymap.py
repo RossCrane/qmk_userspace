@@ -78,13 +78,15 @@ def main():
     o = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" font-family="Segoe UI, Arial, sans-serif">',
          f'<rect width="{W}" height="{H}" fill="#ffffff"/>',
          t(30, 44, "Charybdis Nano keymap (knaughtt)", 32, anchor="start", weight="bold")]
-    x = 30
-    for name, col in (("big letter = tap", "#1f2328"), ("red = hold", C["hold"]), ("top-left = Sym (hold Tab)", C["sym"]),
+    x, ly = 30, 62
+    for n, (name, col) in enumerate((("big letter = tap", "#1f2328"), ("red = hold", C["hold"]), ("top-left = Sym (hold Tab)", C["sym"]),
                       ("top-right = Num (hold Enter)", C["num"]), ("bottom-left = Nav (hold Q or ;)", C["nav"]),
-                      ("bottom-right = Func (hold Esc or J)", C["fun"])):
-        o.append(f'<rect x="{x}" y="62" width="14" height="14" rx="3" fill="{col}"/>')
-        o.append(t(x + 20, 74, name, 14, anchor="start"))
-        x += 34 + len(name) * 7.4
+                      ("bottom-right = Func (hold Esc or J)", C["fun"]))):
+        if n == 3:
+            x, ly = 30, 86
+        o.append(f'<rect x="{x}" y="{ly}" width="14" height="14" rx="3" fill="{col}"/>')
+        o.append(t(x + 20, ly + 12, name, 14, anchor="start"))
+        x += 50 + len(name) * 7.6
     y = 170
     o += board(y, "1. Colemak-DH (default)", "Combos set in Argos: W+F = copy, R+S = paste.  Func layer: Wipe = clear stored settings, Boot = flash mode.", COLEMAK, HOLD, True)
     y += BOARD_H + 70

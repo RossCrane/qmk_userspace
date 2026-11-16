@@ -3,16 +3,16 @@
 <text x="30" y="44" font-size="32" fill="#1f2328" text-anchor="start" font-weight="bold">Charybdis Nano keymap (knaughtt)</text>
 <rect x="30" y="62" width="14" height="14" rx="3" fill="#1f2328"/>
 <text x="50" y="74" font-size="14" fill="#1f2328" text-anchor="start" font-weight="normal">big letter = tap</text>
-<rect x="182.4" y="62" width="14" height="14" rx="3" fill="#cf222e"/>
-<text x="202" y="74" font-size="14" fill="#1f2328" text-anchor="start" font-weight="normal">red = hold</text>
-<rect x="290.4" y="62" width="14" height="14" rx="3" fill="#1a7f37"/>
-<text x="310" y="74" font-size="14" fill="#1f2328" text-anchor="start" font-weight="normal">top-left = Sym (hold Tab)</text>
-<rect x="509.4" y="62" width="14" height="14" rx="3" fill="#0969da"/>
-<text x="529" y="74" font-size="14" fill="#1f2328" text-anchor="start" font-weight="normal">top-right = Num (hold Enter)</text>
-<rect x="750.6" y="62" width="14" height="14" rx="3" fill="#bc4c00"/>
-<text x="771" y="74" font-size="14" fill="#1f2328" text-anchor="start" font-weight="normal">bottom-left = Nav (hold Q or ;)</text>
-<rect x="1014.0" y="62" width="14" height="14" rx="3" fill="#8250df"/>
-<text x="1034" y="74" font-size="14" fill="#1f2328" text-anchor="start" font-weight="normal">bottom-right = Func (hold Esc or J)</text>
+<rect x="201.6" y="62" width="14" height="14" rx="3" fill="#cf222e"/>
+<text x="222" y="74" font-size="14" fill="#1f2328" text-anchor="start" font-weight="normal">red = hold</text>
+<rect x="327.6" y="62" width="14" height="14" rx="3" fill="#1a7f37"/>
+<text x="348" y="74" font-size="14" fill="#1f2328" text-anchor="start" font-weight="normal">top-left = Sym (hold Tab)</text>
+<rect x="30" y="86" width="14" height="14" rx="3" fill="#0969da"/>
+<text x="50" y="98" font-size="14" fill="#1f2328" text-anchor="start" font-weight="normal">top-right = Num (hold Enter)</text>
+<rect x="292.79999999999995" y="86" width="14" height="14" rx="3" fill="#bc4c00"/>
+<text x="313" y="98" font-size="14" fill="#1f2328" text-anchor="start" font-weight="normal">bottom-left = Nav (hold Q or ;)</text>
+<rect x="578.4" y="86" width="14" height="14" rx="3" fill="#8250df"/>
+<text x="598" y="98" font-size="14" fill="#1f2328" text-anchor="start" font-weight="normal">bottom-right = Func (hold Esc or J)</text>
 <g transform="translate(0,170)">
 <text x="30" y="-34" font-size="26" fill="#1f2328" text-anchor="start" font-weight="bold">1. Colemak-DH (default)</text>
 <text x="30" y="-12" font-size="14" fill="#57606a" text-anchor="start" font-weight="normal">Combos set in Argos: W+F = copy, R+S = paste.  Func layer: Wipe = clear stored settings, Boot = flash mode.</text>
